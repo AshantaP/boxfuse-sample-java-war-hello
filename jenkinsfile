@@ -9,7 +9,7 @@
         }
         stage('Quality gate check') {
             steps {
-                withSonarQubeEnv(credentialsid:'sonarqube') {
+                withSonarQubeEnv(credentialsId:'sonarqube') {
                     //OPtionally use a maven environment you have already configured
                     withMaven(maven:'Maven 3.5') {
                         sh 'mvn clean package sonar:sonar'
