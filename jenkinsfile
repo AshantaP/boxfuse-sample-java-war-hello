@@ -7,5 +7,15 @@
                 git 'https://github.com/AshantaP/boxfuse-sample-java-war-hello.git'
             }
         }
+        stage('Quality gate check') {
+            steps {
+                withSonarQubeEnv(credentialsid:'sonarqube') {
+                    //OPtionally use a maven environment you have already configured
+                    withMaven(maven:'Maven 3.5') {
+                        sh 'mvn clean package sonar:sonar'
+                    }
+                }
+            }
+        }
     }
 }
