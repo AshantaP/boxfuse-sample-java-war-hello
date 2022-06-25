@@ -1,0 +1,25 @@
+    pipeline {
+    agent any
+
+    stages {
+        stage('Chekout') {
+            steps {
+                git 'https://github.com/AshantaP/boxfuse-sample-java-war-hello.git'
+            }
+        }
+        stage('Code Quality check') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh 'mvn clean install package sonar:sonar'
+                }
+            }
+        }
+        stage('Quality Gate check') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    waitForQuality  Gate abortPipeline: true
+                }
+            }
+        }
+    }
+}
