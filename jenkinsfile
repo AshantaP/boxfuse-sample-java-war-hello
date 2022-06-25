@@ -1,16 +1,25 @@
-    pipeline {
+pipeline {
     agent any
 
     stages {
-        stage('Chekout') {
+        stage('Checkout') {
             steps {
-                git 'https://github.com/AshantaP/boxfuse-sample-java-war-hello.git'
+                git 'https://github.com/kliakos/sparkjava-war-example.git'
             }
         }
-        stage('Quality gate check') {
+        stage('Quality Gate status') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh 'mvn clean package sonar:sonar'
+                script {
+            withSonarQubeEnv('sonarqube') {
+            sh 'mvn sonar:sonar'
+                          }
+            timeout(time: 1, unit: 'HOURS') {
+            def qg = waitForQualityGate()
+                if (qg.status != 'OK') {
+                    error "pipeline aborted due to quality gate failure: ${qg.status}"
+                }
+                    }
+              sh "mvn clean install"
                 }
             }
         }
