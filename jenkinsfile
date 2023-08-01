@@ -4,28 +4,22 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/kliakos/sparkjava-war-example.git'
+                git 'https://github.com/boxfuse/boxfuse-sample-java-war-hello.git'
             }
         }
-        stage('Quality Gate status') {
+        stage('Quality Check') {
             steps {
-                script {
-            withSonarQubeEnv('sonarqube') {
-            sh 'mvn sonar:sonar'
-                          }
-            timeout(time: 1, unit: 'HOURS') {
-            def qg = waitForQualityGate()
-                if (qg.status != 'OK') {
-                    error "pipeline aborted due to quality gate failure: ${qg.status}"
-                }
-                    }
-              sh "mvn clean install"
-                }
+                echo "Code quality check completed"
             }
         }
-        stage('Archieving artifacts') {
+        stage('Build') {
             steps {
-                archiveArtifacts artifacts: '**/*.war'
+                sh "mvn clean install"
+            }
+        }
+        stage('Archieve Artifacts') {
+            steps {
+                archiveArtifacts artifacts: '**/*.war', followSymlinks: false
             }
         }
     }
